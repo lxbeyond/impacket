@@ -6,7 +6,7 @@
 #
 import array
 
-from ImpactPacket import Header, ImpactPacketException, PacketBuffer
+from impacket.ImpactPacket import Header, ImpactPacketException, PacketBuffer
 
 class IP6_Extension_Header(Header):
 # --------------------------------- - - - - - - -
@@ -53,7 +53,7 @@ class IP6_Extension_Header(Header):
 
         buffer = array.array('B', buffer[self.get_headers_field_size():])
         if remaining_bytes > len(buffer):
-            raise ImpactPacketException, "Cannot load options from truncated packet"
+            print( "Cannot load options from truncated packet")
 
         while remaining_bytes > 0:
             option_type = buffer[0]
@@ -100,7 +100,7 @@ class IP6_Extension_Header(Header):
     
     @classmethod
     def get_decoder(cls):
-        raise RuntimeError("Class method %s.get_decoder must be overridden." % cls)
+        print("Class method %s.get_decoder must be overridden." % cls)
 
     def get_header_type(self):
         return self.__class__.get_header_type_value()
@@ -164,7 +164,7 @@ class Extension_Option(PacketBuffer):
 
     def __init__(self, option_type, size):
         if size > Extension_Option.MAX_OPTION_LEN:
-            raise ImpactPacketException, "Option size of % is greater than the maximum of %d" % (size, Extension_Option.MAX_OPTION_LEN)
+            print( "Option size of % is greater than the maximum of %d" % (size, Extension_Option.MAX_OPTION_LEN))
         PacketBuffer.__init__(self, size)
         self.set_option_type(option_type)
 
@@ -217,7 +217,7 @@ class Option_PADN(Extension_Option):
 
     def __init__(self, padding_size):
         if padding_size < 2:
-            raise ImpactPacketException, "PadN Extension Option must be greater than 2 bytes"
+            print( "PadN Extension Option must be greater than 2 bytes")
 
         Extension_Option.__init__(self, Option_PADN.OPTION_TYPE_VALUE, padding_size)
         self.set_data('\x00' * (padding_size - 2))
@@ -248,7 +248,7 @@ class Basic_Extension_Header(IP6_Extension_Header):
     def add_padding(self):
         required_octets = 8 - (self.get_header_size() % 8)
         if self.get_header_size() + required_octets > Basic_Extension_Header.MAX_HEADER_LEN:
-            raise Exception("Not enough space for the padding")
+            print("Not enough space for the padding")
 
         # Insert Pad1 or PadN to fill the necessary octets
         if 0 < required_octets < 8:
